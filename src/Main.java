@@ -45,7 +45,7 @@ public class Main {
         List<String> arr = Files.readAllLines(path);
         List<String> arrtemp = Files.readAllLines(path);
 
-        System.out.println(arr.get(2).substring(arr.get(2).length() - 1));
+        //System.out.println(arr.get(2).substring(arr.get(2).length() - 1));
         String studentnums = arr.get(2).substring(arr.get(2).length() - 1);
         String stunum2 = arr.get(2).substring(arr.get(2).length() - 2);
 
@@ -77,7 +77,7 @@ public class Main {
             int counter = 0;
             int starts = 0;
             int ends = 0;
-            System.out.println(temp10.substring(20));
+            //System.out.println(temp10.substring(20));
             if (temp10.substring(20).contains("Yes")) {
                 glasses[glasctr] = "Yes";
                 glasctr++;
@@ -310,7 +310,6 @@ public class Main {
 
 
     }
-
 
 
     public static void seating(ArrayList<Student> students, int studentcount, int rows, int cols) {
