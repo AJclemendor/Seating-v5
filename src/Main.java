@@ -298,11 +298,12 @@ public class Main {
                 allfriends[i] = allfriends[i].substring(1);
                 allfriends[i] = allfriends[i].substring(0,allfriends[i].length()-1);
             }
-            //System.out.println(allfriends[i].toLowerCase()+ " : " +  allnames[i].toLowerCase() + " : "+ glasses[i].toLowerCase());
-            students.add(new Student(allfriends[i].toLowerCase(), allnames[i].toLowerCase(), glasses[i].toLowerCase()));
 
+            //System.out.println(allfriends[i].toLowerCase() + " : " +  allnames[i].toLowerCase() + " : " + glasses[i].toLowerCase());
+            students.add(new Student(allfriends[i].toLowerCase(), allnames[i].toLowerCase(), glasses[i].toLowerCase()));
+            //System.out.println(students.get(i).getStudentName());
         }
-        int cols = 8;
+        int cols = 7;
         int rows = 4;
 
         seating(students, studentcounter, rows, cols);
@@ -316,8 +317,15 @@ public class Main {
 
         String[][] classroom;
         classroom = createClassroom(rows, cols); // creates a fresh room with rowsxcols when called will return a new classroom
-        displayRoom(classroom); // shows pre sorted state of classroom
+        classroom = seatStudents(classroom, students, studentcount);
+        //displayRoom(classroom); // shows pre sorted state of classroom
+        classroom = greedyBFS(classroom, students, studentcount, rows, cols);
+
+        //greedyBFS(classroom, students, studentcount,rows, cols);
+
+
         /*
+
         for each row in the seating chart, starting with row 0, do:
         for each column in the seating chart, starting with column 0, do:
 
@@ -338,7 +346,7 @@ public class Main {
 
          */
 
-        displayRoom(classroom); // intended to display a post sorted classroom
+        //displayRoom(classroom); // intended to display a post sorted classroom
 
     }
 
@@ -354,14 +362,82 @@ public class Main {
 
 
     }
-    public static void displayRoom(String[][] classroomn) {
-        for (int i=0; i<classroomn.length; i++) {
+    public static void displayRoom(String[][] classroom) {
+        for (int i=0; i<classroom.length; i++) {
             System.out.println("");
-            for (int j = 0; j<classroomn[0].length; j++) {
-                System.out.print(classroomn[i][j]);
+            for (int j = 0; j<classroom[0].length; j++) {
+                System.out.print(classroom[i][j]);
             }
         }
-    }
+    } // for string name arr
+    public static void displayStudentRoom(Student[][] classroom) {
+        for (int i=0; i<classroom.length; i++) {
+            System.out.println("");
+            for (int j = 0; j<classroom[0].length; j++) {
+                if (classroom[i][j] != null) {
+                    System.out.print(classroom[i][j].getStudentName());
+
+                }
+            }
+        }
+    } // for student arr
+    public static String[][] seatStudents(String[][] classroom, ArrayList<Student> students, int SC) {
+
+        int index = 0;
+        for (int row = 0; row<classroom.length; row++) {
+            for (int col = 0; col<classroom[0].length; col++) {
+                classroom[row][col] = students.get(index).getStudentName();
+                index++;
+                if (index > SC-1) {
+                    return classroom;
+                }
+            }
+        }
+        return classroom;
+    } // seats string arr
+    public static Student[][] seatStudentClass(Student[][] classroom, ArrayList<Student> students, int SC) {
+
+        int index = 0;
+        for (int row = 0; row<classroom.length; row++) {
+            for (int col = 0; col<classroom[0].length; col++) {
+                classroom[row][col] = students.get(index);
+                index++;
+                if (index > SC-1) {
+                    return classroom;
+                }
+            }
+        }
+        return classroom;
+    } // seats student arr
+    public static String[][] swapStudent(String[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+        String dummy = "";
+        dummy = classroom[oldrow][oldcol];
+        classroom[oldrow][oldcol] = classroom[newrow][newcol];
+        classroom[newrow][newcol] = dummy;
+        return classroom;
+    } // swaps kid in string arr
+    public static Student[][] swapStudent(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+        Student dummy = new Student();
+        dummy = classroom[oldrow][oldcol];
+        classroom[oldrow][oldcol] = classroom[newrow][newcol];
+        classroom[newrow][newcol] = dummy;
+        return classroom;
+    } // swaps kid in student arr
+
+
+    public static String[][] greedyBFS(String[][] classroom, ArrayList<Student> students, int stucount, int rows, int cols) {    //greedy Best-first search
+        Student[][] greedyboard = new Student[rows][cols];
+        greedyboard = seatStudentClass(greedyboard, students, stucount);
+        displayStudentRoom(greedyboard);
+
+        /*
+        for (int row = 0; row<rows; row++) {
+            for (int col = 0; col<cols; col++) {
+            }
+        }
+        */
+        return classroom;
+        }
 
 }
 
