@@ -395,11 +395,12 @@ public class Main {
         return classroom;
     } // seats string arr
     public static Student[][] seatStudentClass(Student[][] classroom, ArrayList<Student> students, int SC) {
-
+        double happy = 0.0;
         int index = 0;
         for (int row = 0; row<classroom.length; row++) {
             for (int col = 0; col<classroom[0].length; col++) {
                 classroom[row][col] = students.get(index);
+                classroom[row][col].setHappyLevel(getTotalHappy(classroom, row, col));
                 index++;
                 if (index > SC-1) {
                     return classroom;
@@ -415,7 +416,7 @@ public class Main {
         classroom[newrow][newcol] = dummy;
         return classroom;
     } // swaps kid in string arr
-    public static Student[][] swapStudent(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+    public static Student[][] swapStudentClass(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
         Student dummy = new Student();
         dummy = classroom[oldrow][oldcol];
         classroom[oldrow][oldcol] = classroom[newrow][newcol];
@@ -423,20 +424,48 @@ public class Main {
         return classroom;
     } // swaps kid in student arr
 
+    public static double getTotalHappy(Student[][] classroom, int sturow, int stucol) {
+        double totalHappy = 0.0;
+        String friends = classroom[sturow][stucol].getFriends();
+        System.out.println(classroom[sturow][stucol].getStudentName());
+
+        for (int row = 0; row < classroom.length; row++) {
+            for (int col = 0; col < classroom[0].length; col++) {
+                if (classroom[row][col] != null) {
+                    if (friends.toLowerCase().contains(classroom[row][col].getStudentName().toLowerCase())) { // this is not detecting other friends in spots
+
+                        
+                        // going to have to make a new array split nakes and check all please dont kill my computer
+                        System.out.println("please");
+                        totalHappy += Math.sqrt(Math.pow((double) (sturow - row), 2) + Math.pow((double) (stucol - col), 2)); // woah alot of math euclidean distance
+                    }
+                }
+            }
+        }
+
+        System.out.print(totalHappy);
+        return totalHappy;
+    }
 
     public static String[][] greedyBFS(String[][] classroom, ArrayList<Student> students, int stucount, int rows, int cols) {    //greedy Best-first search
         Student[][] greedyboard = new Student[rows][cols];
         greedyboard = seatStudentClass(greedyboard, students, stucount);
         displayStudentRoom(greedyboard);
 
-        /*
-        for (int row = 0; row<rows; row++) {
-            for (int col = 0; col<cols; col++) {
-            }
+
+
+        greedyboard = implementedBFS(greedyboard, rows, cols, 0);
+
+            displayStudentRoom(greedyboard);
+            return classroom;
         }
-        */
-        return classroom;
-        }
+
+    public static Student[][] implementedBFS(Student[][] greedyboard, int r, int c, int happy) {
+
+
+
+        return greedyboard;
+    }
 
 }
 

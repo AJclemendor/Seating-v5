@@ -25,11 +25,18 @@ public class Student {
     }
 
 
+    public void setStudentName(String name) {
+        StudentName = name;
+    }
+
     public String getStudentName() {
         return StudentName + " : ";
     }
     public double getHappyLevel() {
         return happyLevel;
+    }
+    public void setHappyLevel(double level) {
+        happyLevel += level;
     }
     public ArrayList<String> getEnemies() {
         return enemies;
