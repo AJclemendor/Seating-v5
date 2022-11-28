@@ -36,7 +36,7 @@ public class Student {
         return happyLevel;
     }
     public void setHappyLevel(double level) {
-        happyLevel += level;
+        happyLevel = level;
     }
     public ArrayList<String> getEnemies() {
         return enemies;

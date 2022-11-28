@@ -17,7 +17,6 @@ public class Main {
     public static String SFN;
     public static String SLN;
 
-
     public static void main(String[] args) throws IOException {
         // un touched students as strings
         ArrayList<String> ogstudents = new ArrayList<String>();
@@ -111,7 +110,7 @@ public class Main {
                                 //System.out.println(temp10.substring(starts, ends));
 
                             }
-                           // System.out.println(temp10.substring(starts, ends));
+                            // System.out.println(temp10.substring(starts, ends));
                         }
                     }
                 }
@@ -170,7 +169,7 @@ public class Main {
             //System.out.println(arr4);
             //System.out.println(arr4[0][1]);
 
-        int num = 0;
+            int num = 0;
 
         }
         String[] studentnames = new String[studentcounter];
@@ -240,7 +239,7 @@ public class Main {
                     if (count > 2) {
                         //System.out.println(temp);
                         friendarr[r] += temp;
-                      //  System.out.println(friendarr[r]);
+                        //  System.out.println(friendarr[r]);
                     }
 
                     //System.out.println("");
@@ -320,6 +319,7 @@ public class Main {
         //displayRoom(classroom); // shows pre sorted state of classroom
         classroom = greedyBFS(classroom, students, studentcount, rows, cols);
 
+
         //greedyBFS(classroom, students, studentcount,rows, cols);
 
 
@@ -348,7 +348,6 @@ public class Main {
         //displayRoom(classroom); // intended to display a post sorted classroom
 
     }
-
     public static String[][] createClassroom(int rows, int cols) {
         String[][] classroom = new String[rows][cols];
 
@@ -395,12 +394,11 @@ public class Main {
         return classroom;
     } // seats string arr
     public static Student[][] seatStudentClass(Student[][] classroom, ArrayList<Student> students, int SC) {
-        double happy = 0.0;
+
         int index = 0;
         for (int row = 0; row<classroom.length; row++) {
             for (int col = 0; col<classroom[0].length; col++) {
                 classroom[row][col] = students.get(index);
-                classroom[row][col].setHappyLevel(getTotalHappy(classroom, row, col));
                 index++;
                 if (index > SC-1) {
                     return classroom;
@@ -416,7 +414,7 @@ public class Main {
         classroom[newrow][newcol] = dummy;
         return classroom;
     } // swaps kid in string arr
-    public static Student[][] swapStudentClass(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+    public static Student[][] swapStudent(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
         Student dummy = new Student();
         dummy = classroom[oldrow][oldcol];
         classroom[oldrow][oldcol] = classroom[newrow][newcol];
@@ -424,48 +422,94 @@ public class Main {
         return classroom;
     } // swaps kid in student arr
 
-    public static double getTotalHappy(Student[][] classroom, int sturow, int stucol) {
-        double totalHappy = 0.0;
-        String friends = classroom[sturow][stucol].getFriends();
-        System.out.println(classroom[sturow][stucol].getStudentName());
+    public static double getHappy(Student[][] classroom, int currow, int curcol) {
+        //System.out.println(classroom[curcol][currow].getFriends());
+        if (classroom[currow][curcol] == null) {
+            return 0.0;
+        }
+        //System.out.println(classroom[currow][curcol].getStudentName());
+        String[] names = classroom[currow][curcol].getFriends().split(" ");
+        double happy = 0.0;
+        String friendname = "";
+        ArrayList<Integer> rows = new ArrayList<>();
+        ArrayList<Integer> cols = new ArrayList<>();
 
-        for (int row = 0; row < classroom.length; row++) {
-            for (int col = 0; col < classroom[0].length; col++) {
-                if (classroom[row][col] != null) {
-                    if (friends.toLowerCase().contains(classroom[row][col].getStudentName().toLowerCase())) { // this is not detecting other friends in spots
-
-                        
-                        // going to have to make a new array split nakes and check all please dont kill my computer
-                        System.out.println("please");
-                        totalHappy += Math.sqrt(Math.pow((double) (sturow - row), 2) + Math.pow((double) (stucol - col), 2)); // woah alot of math euclidean distance
+        for (int r = 0; r<classroom.length; r++) {
+            for (int c = 0; c<classroom[0].length; c++) {
+                if (classroom[r][c] != null) {
+                    friendname = classroom[r][c].getStudentName().replace(",", "");
+                    //System.out.println(friendname);
+                    for (int k = 0; k<names.length; k++) {
+                        //System.out.println(names[k]);
+                        if (friendname.contains(names[k])) {
+                            rows.add(r);
+                            cols.add(c);
+                        }
                     }
                 }
             }
         }
+        //System.out.println(rows);
+        //System.out.println(cols);
+        for (int i=0; i<rows.size(); i++) {
+            happy += Math.sqrt(Math.pow(currow-rows.get(i),2) + Math.pow(curcol-cols.get(i),2));
+        }
 
-        System.out.print(totalHappy);
-        return totalHappy;
+        classroom[currow][curcol].setHappyLevel(happy);
+        //System.out.println(happy);
+        return happy;
+    }
+
+    public static double getTotalHappy(Student[][] classroom) {
+        ArrayList<Double> happylist = new ArrayList<>();
+        double happytotal = 0.0;
+        for (int i=0; i<classroom.length; i++) {
+            for (int j=0; j<classroom[0].length; j++) {
+                if (classroom[i][j] != null) {
+
+                    happylist.add(getHappy(classroom, i, j));
+                }
+            }
+        }
+        //System.out.println(happylist);
+        for (int i=0; i<happylist.size(); i++) {
+            happytotal += happylist.get(i);
+        }
+        System.out.println(happytotal);
+        return happytotal;
+
+
     }
 
     public static String[][] greedyBFS(String[][] classroom, ArrayList<Student> students, int stucount, int rows, int cols) {    //greedy Best-first search
         Student[][] greedyboard = new Student[rows][cols];
         greedyboard = seatStudentClass(greedyboard, students, stucount);
-        displayStudentRoom(greedyboard);
+        //displayStudentRoom(greedyboard);
+        // all before is initialization
+
+        //getHappy(greedyboard, 0,0);
+        double totalhapy = getTotalHappy(greedyboard);
+        //greedyboard = BFS(greedyboard, rows, cols, 0, 0);
 
 
-
-        greedyboard = implementedBFS(greedyboard, rows, cols, 0);
-
-            displayStudentRoom(greedyboard);
-            return classroom;
-        }
-
-    public static Student[][] implementedBFS(Student[][] greedyboard, int r, int c, int happy) {
-
-
-
-        return greedyboard;
+        //shows board after sorting 1x
+        //displayStudentRoom(greedyboard);
+        return classroom;
     }
+
+    public static Student[][] BFS(Student[][] classroom, int rows, int cols, int r, int c) {
+        Student[][] greedyboard = classroom.clone();
+
+
+
+        return BFS(greedyboard, rows, cols, r+1, c);
+
+
+
+
+    }
+
+
 
 }
 
