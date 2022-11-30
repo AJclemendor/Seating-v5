@@ -407,19 +407,21 @@ public class Main {
         }
         return classroom;
     } // seats student arr
-    public static String[][] swapStudent(String[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+    /*public static String[][] swapStudent(String[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
         String dummy = "";
         dummy = classroom[oldrow][oldcol];
         classroom[oldrow][oldcol] = classroom[newrow][newcol];
         classroom[newrow][newcol] = dummy;
         return classroom;
     } // swaps kid in string arr
-    public static Student[][] swapStudent(Student[][] classroom, int oldrow, int oldcol, int newrow, int newcol) {
+    */
+
+    public static Student[][] swapStudent(Student[][] place, int oldrow, int oldcol, int newrow, int newcol) {
         Student dummy = new Student();
-        dummy = classroom[oldrow][oldcol];
-        classroom[oldrow][oldcol] = classroom[newrow][newcol];
-        classroom[newrow][newcol] = dummy;
-        return classroom;
+        dummy = place[oldrow][oldcol];
+        place[oldrow][oldcol] = place[newrow][newcol];
+        place[newrow][newcol] = dummy;
+        return place;
     } // swaps kid in student arr
 
     public static double getHappy(Student[][] classroom, int currow, int curcol) {
@@ -457,7 +459,7 @@ public class Main {
 
         classroom[currow][curcol].setHappyLevel(happy);
         //System.out.println(happy);
-        return happy;
+        return happy*-1;
     }
 
     public static double getTotalHappy(Student[][] classroom) {
@@ -475,7 +477,7 @@ public class Main {
         for (int i=0; i<happylist.size(); i++) {
             happytotal += happylist.get(i);
         }
-        System.out.println(happytotal);
+        //System.out.println(happytotal);
         return happytotal;
 
 
@@ -484,29 +486,148 @@ public class Main {
     public static String[][] greedyBFS(String[][] classroom, ArrayList<Student> students, int stucount, int rows, int cols) {    //greedy Best-first search
         Student[][] greedyboard = new Student[rows][cols];
         greedyboard = seatStudentClass(greedyboard, students, stucount);
-        //displayStudentRoom(greedyboard);
+        displayStudentRoom(greedyboard);
         // all before is initialization
 
         //getHappy(greedyboard, 0,0);
-        double totalhapy = getTotalHappy(greedyboard);
-        //greedyboard = BFS(greedyboard, rows, cols, 0, 0);
+        double totalhappy = getTotalHappy(greedyboard);
+        System.out.println(totalhappy);
 
+        int index = 0;
+        int index2 =0;
+        for (int i=0; i<100000; i++) {
+            if (index  > stucount) {
+                index = 0;
+            }
+            if (index < rows) {
+                index2++;
+            }
+            if (index2 >= cols) {
+                index2 =0;
+            }
+            greedyboard = BFSSTEP(greedyboard,getTotalHappy(greedyboard), index, index2);
+            index++;
+
+        }
+        //greedyboard = BFSSTEP(greedyboard,getTotalHappy(greedyboard));
 
         //shows board after sorting 1x
-        //displayStudentRoom(greedyboard);
+        displayStudentRoom(greedyboard);
+        System.out.println(getTotalHappy(greedyboard));
+        System.out.println("done");
+
         return classroom;
     }
 
-    public static Student[][] BFS(Student[][] classroom, int rows, int cols, int r, int c) {
-        Student[][] greedyboard = classroom.clone();
+    public static Student[][] BFSSTEP(Student[][] room, double happy, int i, int j) {
+        Student[][] greedyboard = room;
+        Student[][] backup = room;
+        System.out.println("THIS IS BACKUPROOM");
+        //displayStudentRoom(backup);
+
+        double left = 3988;
+        double right = 3988;
+        double up = 3988;
+        double down = 3988;
+
+        double pre = getTotalHappy(greedyboard);
+        System.out.println(happy + " is starting value");
+
+
+        //System.out.println("PRE\n");
+        //System.out.println(happy);
+        ArrayList<Student[][]> stulist = new ArrayList<>();
+        stulist.add(greedyboard);
+
+        for (int row = i; row < greedyboard.length; row++) {
+            for (int col = j; col < greedyboard[0].length; col++) {
+                if (greedyboard[row][col] != null) {
+
+                    if (col + 1 < greedyboard[0].length) {
+                        greedyboard = swapStudent(greedyboard, row, col, row, col + 1);
+                        right = getTotalHappy(greedyboard);
+                        greedyboard = swapStudent(greedyboard, row, col+1, row, col);
+                        //displayStudentRoom(greedyboard);
+                        System.out.println("RIGHT SCORE " + right);
+                    }
+
+
+                    if (col - 1 > -1) {
+                        greedyboard = swapStudent(greedyboard, row, col, row, col-1);
+                        left = getTotalHappy(greedyboard);
+                        greedyboard = room;
+                        greedyboard = swapStudent(greedyboard, row, col-1, row, col);
+
+                        System.out.println(" LEFT SCORE " + left);
+                    }
+
+                    if (row + 1 < greedyboard.length) {
+                        greedyboard = swapStudent(greedyboard, row, col, row+1, col);
+                        down = getTotalHappy(greedyboard);
+                        greedyboard = room;
+                        greedyboard = swapStudent(greedyboard, row+1, col, row, col);
+
+                        System.out.println( " down SCORE " + down);
+                    }
+
+                    if (row-1 > -1) {
+                        greedyboard = swapStudent(greedyboard, row, col, row-1, col);
+                        up = getTotalHappy(greedyboard);
+                        greedyboard = room;
+                        greedyboard = swapStudent(greedyboard, row-1, col, row, col);
+
+                        System.out.println(" up SCORE " + up);
+
+                    }
+                    if (happy > Math.max(Math.max(up,down),Math.max(left,right))) {
+                        System.out.println("CANCEL");
+                        return backup;
+                    }
 
 
 
-        return BFS(greedyboard, rows, cols, r+1, c);
+                    if (down != 3988 && down>happy && down > right && down > left && down > up) {
+                         /*System.out.println("test");
+                        System.out.println(happy);
+                        System.out.println(down); */
+
+                        System.out.println("DOWN SWAP IS GOOD");
+                        System.out.print(down);
+
+                        greedyboard = swapStudent(greedyboard, row+1, col, row, col);
+                        System.out.println();
+                        //displayStudentRoom(greedyboard);
+                        return greedyboard;
+                    }
+                    if (up != 3988 && up>happy && up > down && up > left && up > right) {
+                        greedyboard = swapStudent(greedyboard, row, col, row-1, col);
+                        System.out.println("UP SWAP IS GOOD");
+                        System.out.print(up);
+
+                        return greedyboard;
+                    }
+                    if (left != 3988 && left > happy && left > right && left > up && left > down) {
+                        System.out.println("LEFT SWAP IS GOOD");
+                        System.out.print(left);
+                        greedyboard = swapStudent(greedyboard, row, col, row, col-1);
+                        return greedyboard;
+                    }
+                    if (right != 3988 && right > happy && right > up && right > down && right > left) {
+                        System.out.println("RIGHT SWAP IS GOOD");
+                        System.out.print(right);
+                        greedyboard = swapStudent(greedyboard, row, col, row, col + 1);
+                        return greedyboard;
+                    }
+                    //System.out.println("BACKUP NOT WORKING");
+                    //displayStudentRoom(backup);
+                    return backup;
 
 
-
-
+                }
+            }
+        }
+        System.out.println("FINAL RETURN");
+        return backup;
     }
 
 
