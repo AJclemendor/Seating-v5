@@ -28,7 +28,7 @@ public class Student {
     public void setStudentName(String name) {
         StudentName = name;
     }
-
+    public boolean getGlasses() {return close; }
     public String getStudentName() {
         return StudentName + " : ";
     }

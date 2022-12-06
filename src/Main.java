@@ -45,12 +45,12 @@ public class Main {
         List<String> arrtemp = Files.readAllLines(path);
 
         //System.out.println(arr.get(2).substring(arr.get(2).length() - 1));
-        String studentnums = arr.get(2).substring(arr.get(2).length() - 1);
+        //String studentnums = arr.get(2).substring(arr.get(2).length() - 1);
         String stunum2 = arr.get(2).substring(arr.get(2).length() - 2);
 
         String firstnamestemp = arr.get(3).toString();
 
-        studentnums += stunum2;
+        //studentnums += stunum2;
         System.out.println(stunum2);
         int studentcounter = Integer.parseInt(stunum2);
         String[] arr2;
@@ -63,11 +63,13 @@ public class Main {
         String temp10 = "";
         int indexg = 0;
         int glasctr = 0;
-
+        //System.out.println(arr.size());
         for (int i=2; i<studentcounter+2; i++) {
+
 
             //System.out.println(arr.get(i).toString());
             temp10 = arr.get(i).toString();
+            //System.out.println(temp10);
             //System.out.println(temp10);
 
 
@@ -87,11 +89,14 @@ public class Main {
 
             // counter for comma if over x then look for " if quotes record name
             for (int a=0; a<arr.get(i).length(); a++) {
-
                 if (temp10.charAt(a) == ',') {
                     counter++;
                 }
                 if (counter > 4) {
+                    //System.out.println(temp10);
+                    if (temp10.contains("Yes")) {
+                        //System.out.println(temp10);
+                    }
                     if (temp10.charAt(a) == '\"') {
                         if (starts == 0) {
                             starts = a;
@@ -104,11 +109,20 @@ public class Main {
 
 
                             if (!(temp10.substring(starts, ends).equals("\",No,"))) {
+                                //System.out.println(temp10);
+                                System.out.println(indexg);
+                                if (indexg != studentcounter) {
 
-                                allnames[indexg] = temp10.substring(starts, ends);
-                                indexg++;
-                                //System.out.println(temp10.substring(starts, ends));
+                                    //System.out.println(temp10.substring(starts, ends));
+                                    allnames[indexg] = temp10.substring(starts, ends);
+                                    //System.out.println(allnames[indexg]);
+                                    indexg++;
+                                    counter=0;
+                                    //System.out.println(allnames[indexg]);
+                                    //System.out.println(arr.get(i));
 
+                                    //System.out.println(temp10.substring(starts, ends));
+                                }
                             }
                             // System.out.println(temp10.substring(starts, ends));
                         }
@@ -118,12 +132,21 @@ public class Main {
         }
 
         for (int i=0; i<allnames.length; i++) {
+            //System.out.println(allnames[i]);
+
             if (allnames[i].contains("No")) {
                 allnames[i] = allnames[i].substring(5);
             }
             allnames[i] = allnames[i].substring(1);
-
-            //System.out.println(allnames[i]);
+            for (int h=0; h<allnames[i].length()-3; h++) {
+                if (allnames[i].substring(h,h+3).equals("Yes")) {
+                    allnames[i] = allnames[i].substring(0,h-1) + allnames[i].substring(h+4);
+                }
+                if (allnames[i].indexOf("\"") > 0) {
+                    allnames[i] = allnames[i].substring(2);
+                }
+            }
+            System.out.println(allnames[i]);
         }
         String[][] arr3 = new String[records][columns];
 
@@ -288,7 +311,7 @@ public class Main {
         ArrayList<String[]> finalFriendList = new ArrayList<>();
         ArrayList<String[]> finalNamesList = new ArrayList<>();
         ArrayList<String[]> finalGlassesList = new ArrayList<>();
-
+        int indexr = 0;
 
         for (int i=0; i<studentcounter; i++) {
 
@@ -296,10 +319,25 @@ public class Main {
             if (allfriends[i].contains("\"")) {
                 allfriends[i] = allfriends[i].substring(1);
                 allfriends[i] = allfriends[i].substring(0,allfriends[i].length()-1);
+                //System.out.println(allfriends[i]);
             }
+            for (int h=0; h<allfriends[i].length()-2; h++) {
+                if (allfriends[i].substring(h, h+3).equals("Yes")) {
+                    allfriends[i] = allfriends[i].substring(0,h) + allfriends[i].substring(h+3);
+
+                }
+
+            }
+            //System.out.println(allfriends[i]);
+
+
+
+
+
 
             //System.out.println(allfriends[i].toLowerCase() + " : " +  allnames[i].toLowerCase() + " : " + glasses[i].toLowerCase());
             students.add(new Student(allfriends[i].toLowerCase(), allnames[i].toLowerCase(), glasses[i].toLowerCase()));
+
             //System.out.println(students.get(i).getStudentName());
         }
         int cols = 7;
@@ -318,34 +356,6 @@ public class Main {
         classroom = seatStudents(classroom, students, studentcount);
         //displayRoom(classroom); // shows pre sorted state of classroom
         classroom = greedyBFS(classroom, students, studentcount, rows, cols);
-
-
-        //greedyBFS(classroom, students, studentcount,rows, cols);
-
-
-        /*
-
-        for each row in the seating chart, starting with row 0, do:
-        for each column in the seating chart, starting with column 0, do:
-
-         Swap the student at the current location with the student
-         sitting behind her if that swap would reduce the total
-         unhappiness.
-
-         Swap the student at the current location with the student
-         sitting in front of her if that swap would reduce the total
-         unhappiness.
-
-         Swap the student at the current location with the student to
-         her left if that swap would reduce the total unhappiness.
-
-         Swap the student at the current location with the student to
-         her right if that swap would reduce the total unhappiness.
-
-
-         */
-
-        //displayRoom(classroom); // intended to display a post sorted classroom
 
     }
     public static String[][] createClassroom(int rows, int cols) {
@@ -454,8 +464,19 @@ public class Main {
         //System.out.println(rows);
         //System.out.println(cols);
         for (int i=0; i<rows.size(); i++) {
-            happy += Math.sqrt(Math.pow(currow-rows.get(i),2) + Math.pow(curcol-cols.get(i),2));
+            happy += Math.sqrt(Math.pow(currow - rows.get(i), 2) + Math.pow(curcol - cols.get(i), 6)); // trying 6
+
         }
+         /*   if (currow == rows.get(i)) {
+                happy -= 5;
+            }
+
+        if (classroom[currow][curcol].getGlasses()) {
+            happy += 10;
+        }
+        */
+
+
 
         classroom[currow][curcol].setHappyLevel(happy);
         //System.out.println(happy);
@@ -495,18 +516,21 @@ public class Main {
 
         int index = 0;
         int index2 =0;
-        for (int i=0; i<100000; i++) {
-            if (index  > stucount) {
+        for (int i=0; i<100000; i++) { // placeholder 1
+
+            if (index == rows) {
                 index = 0;
-            }
-            if (index < rows) {
                 index2++;
             }
-            if (index2 >= cols) {
-                index2 =0;
+            if (index2 == cols) {
+                index2 = 0;
             }
+
             greedyboard = BFSSTEP(greedyboard,getTotalHappy(greedyboard), index, index2);
             index++;
+            if (i%10000 == 0 ) {
+                System.out.println("10k Run ");
+            }
 
         }
         //greedyboard = BFSSTEP(greedyboard,getTotalHappy(greedyboard));
@@ -522,7 +546,7 @@ public class Main {
     public static Student[][] BFSSTEP(Student[][] room, double happy, int i, int j) {
         Student[][] greedyboard = room;
         Student[][] backup = room;
-        System.out.println("THIS IS BACKUPROOM");
+        //System.out.println("THIS IS BACKUPROOM");
         //displayStudentRoom(backup);
 
         double left = 3988;
@@ -531,7 +555,7 @@ public class Main {
         double down = 3988;
 
         double pre = getTotalHappy(greedyboard);
-        System.out.println(happy + " is starting value");
+        //System.out.println(happy + " is starting value");
 
 
         //System.out.println("PRE\n");
@@ -548,7 +572,7 @@ public class Main {
                         right = getTotalHappy(greedyboard);
                         greedyboard = swapStudent(greedyboard, row, col+1, row, col);
                         //displayStudentRoom(greedyboard);
-                        System.out.println("RIGHT SCORE " + right);
+                      //  System.out.println("RIGHT SCORE " + right);
                     }
 
 
@@ -558,7 +582,7 @@ public class Main {
                         greedyboard = room;
                         greedyboard = swapStudent(greedyboard, row, col-1, row, col);
 
-                        System.out.println(" LEFT SCORE " + left);
+                  //      System.out.println(" LEFT SCORE " + left);
                     }
 
                     if (row + 1 < greedyboard.length) {
@@ -567,7 +591,7 @@ public class Main {
                         greedyboard = room;
                         greedyboard = swapStudent(greedyboard, row+1, col, row, col);
 
-                        System.out.println( " down SCORE " + down);
+                     //   System.out.println( " down SCORE " + down);
                     }
 
                     if (row-1 > -1) {
@@ -576,7 +600,7 @@ public class Main {
                         greedyboard = room;
                         greedyboard = swapStudent(greedyboard, row-1, col, row, col);
 
-                        System.out.println(" up SCORE " + up);
+                     //   System.out.println(" up SCORE " + up);
 
                     }
                     if (happy > Math.max(Math.max(up,down),Math.max(left,right))) {
@@ -629,11 +653,7 @@ public class Main {
         System.out.println("FINAL RETURN");
         return backup;
     }
-
-
-
 }
-
 
 
 
